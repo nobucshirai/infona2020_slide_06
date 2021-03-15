@@ -1,0 +1,475 @@
+% [Overleaf] https://www.overleaf.com/read/rngdfcxpspbf
+% [YouTube] https://youtu.be/Tru0gCvf9JA
+% [GitHub] https://github.com/nobucshirai/infona2020_slide_06
+\documentclass[dvipdfmx,aspectratio=169,20pt]{beamer}
+\usepackage{bxdpx-beamer}
+
+% Beamer theme
+\usetheme{Boadilla}
+
+%%%%% JAPANESE FONT SETTINGS %%%%%
+\usepackage[utf8]{inputenc}
+\usepackage{pxjahyper}
+\renewcommand{\kanjifamilydefault}{\gtdefault} % for Gothic Japanese fonts
+\newcommand{\myfontsetting}[3]{{\fontsize{#1}{#2}\selectfont #3}}
+\usepackage[deluxe,uplatex]{otf} % needed to use super bold Japanese fonts
+\usepackage[unicode,noto-otc]{pxchfon} % needed to use super bold Japanese fonts
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%% SETTINGS FOR MATH SYMBOLS %%%%%
+\usepackage{amsmath,amssymb}
+\usepackage{bm}
+%\usepackage{graphicx}
+\usepackage{latexsym}
+\usefonttheme{professionalfonts} % use Serif fonts for equations
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{fancybox,ascmac}
+\usepackage{url}
+\usepackage[many]{tcolorbox}
+
+%%%%% ALGORITHM SETTING %%%%%
+\usepackage{algorithm}
+\usepackage[noend]{algorithmic}
+\algsetup{linenosize=\color{fg!50}\fontsize{8pt}{8pt}\selectfont}
+\renewcommand\algorithmicdo{\bfseries :}
+\renewcommand\algorithmicthen{\bfseries :}
+\renewcommand\algorithmicrequire{\textbf{Input:}}
+\renewcommand\algorithmicensure{\textbf{Output:}}
+\renewcommand{\algorithmicprint}{\textbf{break}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\definecolor{myblue1}{RGB}{45,130,200}
+\definecolor{myblue2}{RGB}{26,89,142}
+\setbeamertemplate{navigation symbols}{}
+\setbeamercolor*{structure}{fg=myblue1,bg=blue}
+\setbeamercolor{block title}{fg=myblue1!50!black}
+\setbeamercolor*{block title example}{fg=white,bg=myblue2}
+\setbeamercolor*{palette primary}{use=structure,fg=white,bg=structure.fg}
+\setbeamercolor*{palette secondary}{use=structure,fg=white,bg=structure.fg!75!black}
+\setbeamercolor*{palette tertiary}{use=structure,fg=white,bg=structure.fg!50!black}
+\setbeamercolor*{palette quaternary}{fg=black,bg=myblue1}
+
+\setbeamerfont{alerted text}{series=\bfseries}
+\setbeamerfont{section in toc}{series=\mdseries}
+\setbeamerfont{frametitle}{size=\Large,series=\bfseries}
+\setbeamerfont{title}{size=\LARGE,series=\bfseries}
+\setbeamerfont{date}{size=\small}
+
+\setbeamertemplate{block title}[shadow=false]
+\setbeamertemplate{blocks}[rounded][shadow=false]
+
+%%%%% BEAMER FOOTLINE SETTINGS %%%%%%
+\setbeamertemplate{footline}[frame number]{}
+\setbeamerfont{footline}{size=\bf\footnotesize\small}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%% BEAMER ITEM SETTINGS %%%%%
+\setbeamertemplate{itemize item}[circle]
+\setbeamertemplate{itemize subitem}[triangle]
+\setbeamertemplate{enumerate item}[circle]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+%%%%% START_TAG B %%%%%
+\frametitle{[問題] V-B}
+%\noindent{\bf V-B.}
+
+\myfontsetting{10pt}{10pt}{
+$5 \times 5$ の行列 $A$ および5次元の縦ベクトル $\bm{b}$ がそれぞれ以下のように与えられたとする。
+}
+
+\vspace{2mm}
+\myfontsetting{12pt}{12pt}{
+\begin{equation*}
+    A = \begin{bmatrix}
+    14 & 14 & -9 &  3 & -5\\
+    14 & 52 &-15 &  2 &-32\\
+    -9 &-15 & 36 & -5 & 16\\
+     3 &  2 & -5 & 47 & 49\\
+    -5 &-32 & 16 & 49 & 79
+    \end{bmatrix},\ 
+    \bm{b} = \begin{bmatrix}
+    -15\\
+    -100\\
+    106\\
+    329\\
+    463
+    \end{bmatrix}.
+\end{equation*}
+}
+\vspace{-4mm}
+
+\noindent\myfontsetting{10pt}{10pt}{
+この時行列 $A$ に対してガウス-ザイデル法を実行するプログラムを作成し連立一次方程式 $A\bm{x}=\bm{b}$ の解 $\bm{x}=[x_1, x_2, x_3, x_4, x_5]^\mathsf{T}$ を有効数字10進3桁まで求め4桁を四捨五入して答えよ。
+}\\
+\myfontsetting{10pt}{10pt}{
+作成したプログラムも提出すること。プログラミング言語は問わない。
+}
+%%%%% END_TAG B %%%%%
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{[略解] V-B}
+\begin{equation*}
+    \bm{x} = \begin{bmatrix}
+    -4.01\times 10^{-14}\\
+    1.00\\
+    2.00\\
+    3.00\\
+    4.00
+    \end{bmatrix}
+\end{equation*}
+
+1つ目の要素はほぼ $0$
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{{\large [手法] 疎行列を扱うための安い方法}}
+\begin{block}{{\bf\small ガウス-ザイデル法} \myfontsetting{13pt}{18pt}{(Gauss-Seidel iteration)}}
+    \myfontsetting{12pt}{14pt}{
+    \begin{algorithmic}[1]
+        \REQUIRE $A$, $k_\mathrm{max}$, $\bm{x}$ \myfontsetting{8pt}{8pt}{(初期ベクトル)} 
+        \ENSURE $\bm{x}$
+        \FOR{$k = 1,2, \dots, k_\mathrm{max}$}
+        \FOR{$i = 1,\dots, n$}
+        \STATE $sum = 0$
+        \FOR{$j = 1,\dots, i-1$}
+        \STATE $sum \leftarrow sum + a_{ij}x_j$
+        \ENDFOR
+        \FOR{$j = i+1, \dots, n$}
+        \STATE $sum \leftarrow sum + a_{ij}x_j$
+        \ENDFOR
+        \STATE $x_i = (-sum +b_i)/a_{ii}$
+        \ENDFOR
+        \ENDFOR
+    \end{algorithmic}
+    }
+\end{block}
+    \vspace{1mm}
+    \myfontsetting{8pt}{8pt}{ 
+    ※ 疎行列を安く扱うにはさらに行列 $A=(a_{ij})_{1\le i \le n, 1\le j \le n}$ を適した形で保存する必要があり、上記のアルゴリズムも\\
+    \vspace{-3mm}
+    非零の $a_{ij}$ のみについての演算を行うように修正する必要がある。
+    }
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{{\large [手法解説]}}
+\begin{block}{\myfontsetting{18pt}{18pt}{\bf ガウス-ザイデル法}
+%\vspace{-5mm}
+\myfontsetting{12pt}{12pt}{(Gauss-Seidel iteration)} }
+\begin{center}
+    \myfontsetting{12pt}{12pt}{$\displaystyle x^{(k+1)}_i = \frac{1}{a_{ii}}\left( -\sum_{j<i} a_{ij} x^{(k+1)}_j - \sum_{j>i} a_{ij} x^{(k)}_j + b_i \right),$}
+    \myfontsetting{10pt}{10pt}{$1\le i \le n$, $1\le j \le n$}
+\end{center}
+\end{block}
+\begin{itemize}
+    %\setlength{\itemsep}{0.5cm}
+    \item \myfontsetting{15pt}{15pt}{$n=3$ の例}
+    \begin{itemize}
+        \item \myfontsetting{10pt}{10pt}{$x^{(k+1)}_1 = \frac{1}{a_{11}} \left(-a_{12}x^{(k)}_2 - a_{13}x^{(k)}_3+b_1 \right)$}
+        \myfontsetting{8pt}{8pt}{\textcolor{blue} ($a_{11} x_1 + a_{12}x_2 + a_{13}x_3 = b_1$ の変形)}
+        \item \myfontsetting{10pt}{10pt}{$x^{(k+1)}_2 = \frac{1}{a_{22}} \left(-a_{21}x^{(k+1)}_1 - a_{23}x^{(k)}_3+b_2 \right)$}
+		\myfontsetting{8pt}{8pt}{\textcolor{blue} ($a_{21} x_1 + a_{22}x_2 + a_{23}x_3 = b_2$ の変形)}
+        \item \myfontsetting{10pt}{10pt}{$x^{(k+1)}_3 = \frac{1}{a_{33}} \left(-a_{31}x^{(k+1)}_1 - a_{32}x^{(k+1)}_2+b_3 \right)$}
+		\myfontsetting{8pt}{8pt}{\textcolor{blue} ($a_{31} x_1 + a_{32}x_2 + a_{33}x_3 = b_3$ の変形)}
+    \end{itemize}
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%タイトルページ
+
+\title{関数近似と補間 (1)}
+\titlegraphic{\vspace{-7mm}\flushright\includegraphics[width=1.8cm,height=1.8cm]{hattari_kun_good_org.eps}}
+
+\setbeamertemplate{title page}{%
+    \begin{flushright}
+        \usebeamercolor[fg]{titlegraphic}\inserttitlegraphic
+    \end{flushright}
+    \vspace{-0.6cm}
+    \hspace{1.5cm}{\selectfont\usebeamerfont{subtitle} \usebeamercolor[fg]{subtitle} [\href{https://youtu.be/Tru0gCvf9JA}{数値解析 第6回}] \par}
+    \vspace{0.5cm}
+    %\vspace{2.5em}
+    {\centering\usebeamerfont{title} \usebeamercolor[fg]{title} \inserttitle \par}
+    \vspace{0.5cm}
+    \begin{center}
+        データ点間をつなぐ関数を速く求める
+    \end{center}
+}
+
+\date[\todey]{}
+
+\frame{\titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{関数近似 {\small (Approximation)}}
+\begin{itemize}
+    \setlength{\itemsep}{0.25cm}
+    \item \myfontsetting{18pt}{18pt}{関数 $f(x)$ または点の集合をより性質の良い関数を用いた有限項の級数として近似的に表す方法}
+    %\begin{itemize}
+        %\item \myfontsetting{12pt}{12pt}{ $x_1,x_2,\dots,x_n$ に対応する点 $f(x_1),f(x_2),\dots,f(x_n)$ を通る関数を近似的に求める問題にすれば{\bf 補間}と同じ問題設定になる}
+    %\end{itemize}
+    \item \myfontsetting{18pt}{18pt}{関数 $f(x)$ に対する関数近似の例}
+    \setlength{\itemsep}{0.15cm}
+    \begin{itemize}
+        \item \myfontsetting{15pt}{15pt}{多項式近似} \myfontsetting{12pt}{12pt}{$f(x) \sim p_n(x)=\sum_{i=0}^n a_n x^n$}
+        \begin{itemize}
+            \setlength{\itemsep}{0.15cm}
+            \item テイラー展開 \myfontsetting{10pt}{10pt}{ $f(x) \sim \sum_{i=0}^n \frac{f^{(n)}(a)}{n!}(x-a)^n$}
+            %\item チェビシェフ多項式展開 \myfontsetting{12pt}{12pt}{ $f(x)\sim \sum_{i=0}^n a_k T_k(x)$}\\
+            %\hspace{2cm}\myfontsetting{12pt}{12pt}{ $T_0(x)=1,\, T_1(x)=x,\, T_2(x)=2x^2-1, \dots$            }
+            %\item {\bf 多項式補間}
+        \end{itemize}
+        \item \myfontsetting{15pt}{15pt}{ フーリエ級数展開} \myfontsetting{12pt}{12pt}{ $f(x)\sim \frac{a_0}{2}+\sum_{i=1}^n \left( a_n \cos nx + b_n \sin nx\right)$}
+    \end{itemize}
+    \item \myfontsetting{18pt}{18pt}{点の集合に対する関数近似の例}
+    \begin{itemize}
+        \item \myfontsetting{15pt}{15pt}{\bf 多項式補間}、\myfontsetting{15pt}{15pt}{\bf 最小2乗法}
+    \end{itemize}
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{補間 {\small (Interpolation)}}
+
+\begin{itemize}
+    \setlength{\itemsep}{0.25cm}
+    \item \myfontsetting{18pt}{18pt}{ 2つのデータ点 $(x_a, y_a)$, $(x_b, y_b)$ の間の $x_c$ \myfontsetting{12pt}{12pt}{ $(x_a\le x_c \le x_b)$} での値 $y_c$ を近似的に求める方法}
+    \begin{itemize}
+        \item \myfontsetting{15pt}{15pt}{ データ点をつなぐ関数 $q(x)$ を{\bf 関数近似}で求め、$x_c$ での近似値を $y_c\sim q(x_c)$ として求める} 
+    \end{itemize}
+    \item \myfontsetting{18pt}{18pt}{ 補間の例}
+    \begin{itemize}
+        \setlength{\itemsep}{0.15cm}
+        \item \myfontsetting{15pt}{15pt}{\bf 多項式補間} \myfontsetting{12pt}{12pt}{(例. ラグランジュ補間、ニュートン補間)}
+        \item \myfontsetting{15pt}{15pt}{\bf 区分的多項式補間} \myfontsetting{12pt}{12pt}{(例. スプライン補間)}
+    \end{itemize}
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{{\large 多項式補間の問題設定}}
+
+\begin{itemize}
+    \setlength{\itemsep}{0.15cm}
+    \item {\small \bf 多項式補間}
+    \begin{itemize}
+        \setlength{\itemsep}{0.15cm}
+        \item [\myfontsetting{10pt}{10pt}{\bf 問題設定1}] \myfontsetting{14pt}{16pt}{$x$ 軸上の値の集合 $\{x_i,\ 0\le i \le n\}$ と連続関数 $f(x)$ が与えられた時、$p_n(x_i)=f(x_i),$ $0\le i \le n$ を満たす高々 $n$ 次の多項式 $p_n(x)$ を求める問題} \myfontsetting{10pt}{10pt}{({\bf 関数近似}の一種)}
+        \item [\myfontsetting{10pt}{10pt}{\bf 問題設定2}] \myfontsetting{14pt}{16pt}{$x$ 軸上の値の集合 $\{x_i,0\le i \le n\}$ とそれぞれの $x_i$ に対応するデータの値 $\{y_i,\ 0\le i\le n\}$ が与えられた時、$p_n(x_i)=y_i,\ 0\le i \le n$ を満たす高々 $n$ 次の多項式 $p_n(x)$ を求める問題}
+    \end{itemize}
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{[問題] V\hspace{-.1em}I-A}
+%%%%% START_TAG A %%%%%
+%\noindent{\bf [V\hspace{-.1em}I. 関数近似と補間 (1)]}%RETURN
+
+%\noindent{\bf V\hspace{-.1em}I-A.}
+\myfontsetting{18pt}{20pt}{
+(1) 2つのデータ点 $(x_0,y_0)=(0,1)$, $(x_1,y_1)=(1,2)$ を通る1次の補間多項式 $p_1(x)=\alpha_1 x + \alpha_0$ を以下の3通りの方法により求めよ。
+(a) 連立方程式を解く方法、(b) ラグランジュ補間を用いる方法、(c) ニュートン補間を用いる方法。%\\
+
+\vspace{3mm}
+
+\noindent %DELETE
+(2) 問1の2点に $(x_2,y_2)=(4,2)$ を加えた3点を通る2次の補間多項式 $p_2(x)=\beta_2 x^2 + \beta_1 x + \beta_0$ を問1と同様の3通りの方法により求めよ。
+}
+%%%%% END_TAG A %%%%%
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{[略解] V\hspace{-.1em}I-A}
+%\vspace{-0.5cm}
+
+\myfontsetting{18pt}{18pt}{ (1) $p_1(x) = x + 1$}
+
+\vspace{2mm}
+
+\myfontsetting{12pt}{12pt}{ 
+(a) $p_1(x_0) = y_0$,  $p_1(x_1) = y_1$ を連立させて解く、(b) $p_1(x) = y_0 L^{(1)}_0 + y_1 L^{(1)}_1$ を計算、(c) $p_1(x)=a_0+a_1\,w_0(x)$ を計算。
+}
+
+\vspace{5mm}
+
+\myfontsetting{18pt}{18pt}{ (2) $p_2(x) = - \frac{1}{4} x^2 + \frac{5}{4} x + 1$}
+
+\vspace{4mm}
+
+\myfontsetting{12pt}{12pt}{ 
+(a) $p_1(x_0) = y_0$,  $p_1(x_1) = y_1$, $p_1(x_2) = y_2$ を連立させて解く、\\
+(b) $p_2(x) = y_0 L^{(2)}_0 + y_1 L^{(2)}_1 + y_2 L^{(2)}_2$ を計算、(c) $p_2(x)=p_1(x)+a_2\,w_1(x)$ を計算。
+}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{{\large [手法解説]}}
+\begin{block}{\myfontsetting{20pt}{20pt}{\bf ラグランジュ補間}
+%\vspace{-5mm}
+\myfontsetting{12pt}{12pt}{(Lagrange interpolation)}}
+\myfontsetting{12pt}{12pt}{$x_i$ に対応する $n$ 次式 \myfontsetting{10pt}{10pt}{ $\displaystyle L^{(n)}_i(x) = \prod^n_{k=0, k\neq i} \frac{x - x_k}{x_i - x_k}$} を $n+1$ 個足し合わせることで補間多項式 \myfontsetting{10pt}{10pt}{ $\displaystyle p_n(x) = \sum^n_{k=0} y_k L^{(n)}_k(x)$} を構成する方法}
+\end{block}
+
+\vspace{-2mm}
+
+\begin{itemize}
+    \item \myfontsetting{12pt}{12pt}{ 点 $(x_j, y_j)$ を通ることを確認}
+    \begin{itemize}
+        %\setlength{\itemsep}{0.5cm}
+        \item \myfontsetting{10pt}{10pt}{ $\displaystyle L^{(n)}_k (x_j) = \delta_{kj} = \begin{cases}
+            1 & (k=j)\\
+            0 & (k\neq j)
+            \end{cases}$ より%\\
+            $\displaystyle p_n(x_j) = \sum^n_{k=0} y_k L^{(n)}_k(x_j) = \sum^n_{k=0} y_k \delta_{kj} = y_j$
+            }
+    \end{itemize}
+    \item \myfontsetting{12pt}{12pt}{ 乗除算の回数は $n^2 + \mathcal{O}(n)$}
+    \begin{itemize}
+        \item \myfontsetting{10pt}{10pt}{  連立方程式をLU分解 ($\frac{1}{3} n^3 +\mathcal{O}(n^2)$) で解くよりも速い
+        }  \myfontsetting{8pt}{8pt}{ 
+        (補間多項式の係数をすべて求める場合は $\frac{1}{2} n^3 +\mathcal{O}(n^2)$ でLU分解より遅い)
+        }
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{{\large [手法] ニュートン補間 (1)}}
+    \begin{block}{{\bf\small ニュートン補間 \myfontsetting{13pt}{18pt}{ (差分商の計算)}}\\
+\vspace{-5mm}
+\myfontsetting{13pt}{18pt}{Newton interpolation via divided difference coefficients (construction)}}
+    \myfontsetting{12pt}{14pt}{
+        \begin{algorithmic}[1]
+            \REQUIRE $n, x_0, x_1, \dots, x_n, y_0, y_1,\dots,y_n$
+            \ENSURE $a_0, a_1, \dots, a_n$
+            \STATE $a_0 \leftarrow y_0$
+            \FOR{$k=1,2,\dots,n$}
+            \STATE $w \leftarrow 1$
+            \STATE $p \leftarrow 0$
+            \FOR{$j=0,1,\dots,k-1$}
+            \STATE $p\leftarrow p + a_j w$
+            \STATE $w\leftarrow w\, (x_k - x_j)$
+            \ENDFOR
+            \STATE $a_k \leftarrow (y_k - p)/w$
+            \ENDFOR
+        \end{algorithmic}
+        }
+    \end{block}
+    
+    \vspace{-4mm}
+    \myfontsetting{12pt}{12pt}{ 乗除算の回数は $n^2$}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{{\large [手法] ニュートン補間 (2)}}
+    \begin{block}{{\bf\small ニュートン補間 \myfontsetting{13pt}{18pt}{ ($x=\xi$ での値 $p_n(\xi)$ の評価)}}\\
+\vspace{-5mm}
+\myfontsetting{13pt}{18pt}{ Newton interpolation via divided difference coefficients (evaluation)}}
+    \myfontsetting{13pt}{18pt}{
+        \begin{algorithmic}[1]
+            \REQUIRE $n, \xi, x_0, x_1, \dots, x_n, a_0, a_1, \dots, a_n$
+            \ENSURE $p_{\xi}$ \myfontsetting{8pt}{8pt}{ ($x=\xi$ での補間多項式の値)}
+            \STATE $p_{\xi} \leftarrow a_n$
+            \FOR{$k=n-1,n-2,\dots,0$}
+            \STATE $p_\xi \leftarrow a_k + p_{\xi}\,(\xi - x_k)$ \myfontsetting{8pt}{8pt}{ (ホーナー法)}
+            \ENDFOR
+        \end{algorithmic}
+        }
+    \end{block}
+    
+    %\vspace{-4mm}
+    \myfontsetting{12pt}{12pt}{乗除算の回数は $n$}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{{\large [手法解説]}}
+\begin{block}{{\bf \myfontsetting{15pt}{15pt}{ 差分商を用いたニュートン補間}}
+%\vspace{-5mm}
+\myfontsetting{8pt}{8pt}{(Newton interpolation via divided difference coefficients)}}
+\myfontsetting{12pt}{12pt}{
+通過する点 $(x_k,y_k)$ を1点ずつ増やしながら $n$ 次補間多項式 $p_n(x)$ を構成する方法。
+\myfontsetting{10pt}{10pt}{$\displaystyle w_k(x) = \prod_{i=0}^k (x - x_i)$} としたとき、{\bf 差分商} \myfontsetting{10pt}{10pt}{$\displaystyle a_{k+1} = \frac{y_{k+1}-p_k (x_{k+1})}{w_k (x_{k+1})}$}を含む漸化式 $p_{k+1}(x) = p_k(x) + a_{k+1}\, w_k (x)$ を用いる。$p_0(x) \equiv a_0 = y_0$ とする。
+}
+\end{block}
+\vspace{-2mm}
+\begin{itemize}
+    %\setlength{\itemsep}{0.5cm}
+    \item \myfontsetting{15pt}{15pt}{ホーナー法による書き換え}
+    \begin{itemize}
+        %\item $p_n(x) =\sum^{n}_{k=0}a_k w_{k-1}(x)$
+        \item \vspace{-2mm} \myfontsetting{10pt}{10pt}{$p_n(x) = a_0 + a_1 (x-x_0) + a_2 (x-x_0)(x-x_1)+\cdots +a_n(x-x_0)\cdots(x-x_{n-1})$}\\
+        \vspace{-3mm}
+        \hspace{8mm}
+         \myfontsetting{10pt}{10pt}{$= a_0 + (x-x_0)(a_1 + (x-x_1)(a_2+\cdots +(x-x_{n-1})a_n)\cdots)$}
+    \end{itemize}
+    \item \myfontsetting{15pt}{15pt}{乗除算の回数}
+        \begin{itemize}
+            \item \myfontsetting{12pt}{12pt}{差分商の計算: $n^2$、$x=\xi$ での値 $p_n(\xi)$の評価: $n$}
+        	\item \myfontsetting{12pt}{12pt}{新たな点 $(x_{n+1}, y_{n+1})$ での差分商 $a_{n+1}$ を求める: $n$}
+    \end{itemize}
+    %\item %\myfontsetting{8pt}{8pt}{ (ラグランジュ補間で点を新たに足すには $\frac{1}{2} n^3 +\mathcal{O}(n^2)$ でLU分解より遅い)}
+    %\end{itemize}
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+%%%%% PASTE_START_TAG B %%%%%
+\frametitle{[問題] V\hspace{-.1em}I-B}
+%\noindent{\bf V\hspace{-.1em}I-B.}
+
+\myfontsetting{12pt}{12pt}{
+$f(x)=e^x$, $x\in [-1,1]$ とした時、点 $(x_0, f(x_0)), (x_1, f(x_1)), \dots, (x_n, f(x_n))$ に対してニュートン補間を行い補間多項式 $p_n(x)$ を差分商を用いて表す場合を考える。
+$x_0 = -1$, $x_n = 1$ とし $x_1, \dots, x_{n-1}$ を区間 $[-1,1]$ を $n$ 等分するように取った時、 $n=2,4,8,16,32$ の場合の $p_n(x)$ について相対誤差 $E(x)$ を区間 $[-1,1]$ を500等分する点 $(x=-1.0, -0.996, -0.992, \dots, -0.004, 0.0, 0.004, \dots, 0.992, 0.996, 1.0)$ で求め、$E(x)$ が最大となる $x$ とその時の $E(x)$ の値をそれぞれ有効数字10進3桁で4桁目を四捨五入して答えよ。
+}\\
+\myfontsetting{10pt}{10pt}{
+作成したプログラムも提出すること。プログラミング言語は問わない。
+}
+%%%%% PASTE_END_TAG B %%%%%
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\vspace{10mm}
+
+\begin{center}
+    \myfontsetting{36pt}{36pt}{\bf \color{myblue1} おまけ}
+    
+    \vspace{5mm}
+    \myfontsetting{15pt}{15pt}{ ※ 配列のインデックスが0から始まるプログラミング言語用のアルゴリズム}
+\end{center}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{{\large [手法] 疎行列を扱うための安い方法}}
+\begin{block}{{\bf\small ガウス-ザイデル法} \myfontsetting{13pt}{18pt}{(Gauss-Seidel iteration)}\\
+\vspace{-5mm}
+\myfontsetting{10pt}{10pt}{ ※ 配列のインデックスが0から始まるプログラミング言語用}
+}
+    \myfontsetting{12pt}{14pt}{
+    \begin{algorithmic}[1]
+        \REQUIRE $A$, $k_\mathrm{max}$, $\bm{x}$ \myfontsetting{8pt}{8pt}{(初期ベクトル)} 
+        \ENSURE $\bm{x}$
+        \FOR{$k = 1,2, \dots, k_\mathrm{max}$}
+        \FOR{$i = 0,\dots, n-1$}
+        \STATE $sum = 0$
+        \FOR{$j = 0,1,\dots, i-1$}
+        \STATE $sum \leftarrow sum + a_{ij}x_j$
+        \ENDFOR
+        \FOR{$j = i+1, i+2, \dots, n-1$}
+        \STATE $sum \leftarrow sum + a_{ij}x_j$
+        \ENDFOR
+        \STATE $x_i = (-sum +b_i)/a_{ii}$
+        \ENDFOR
+        \ENDFOR
+    \end{algorithmic}
+    }
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
